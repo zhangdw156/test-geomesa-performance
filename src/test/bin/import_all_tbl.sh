@@ -13,7 +13,7 @@
 
 # 1. Docker 容器名
 #    请确保将此名称替换为您正在运行的 PostgreSQL 容器的实际名称或ID
-CONTAINER_NAME="postgis/postgis:14-3.3" # <--- 修改这里！
+CONTAINER_NAME="stag-gstria-postgis_postgis-exporter_1" # <--- 修改这里！
 
 # 2. 数据库连接详细信息
 #    当 psql 在容器内部运行时，主机名通常是 'localhost'
