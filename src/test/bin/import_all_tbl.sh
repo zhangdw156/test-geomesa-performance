@@ -22,10 +22,9 @@ TABLE_NAME="performance"
 DB_PASSWD="ds123456"
 
 # 3. 容器内部存放 .tbl 文件的目录
-#    这必须是容器内的绝对路径！
-TBL_DIR_IN_CONTAINER="/tmp/import-data" # <-- 确认这是你 cp 进去的路径
+TBL_DIR_IN_CONTAINER="/tmp/import-data"
+TBL_DIR_IN_LOCAL="/home/gstria/datasets/beijingshi_tbl"
 
-# --- 脚本主逻辑 ---
 
 # 记录脚本总开始时间
 start_total_time=$(date +%s.%N)
@@ -42,11 +41,11 @@ if ! docker ps --filter "name=${CONTAINER_NAME}" --format "{{.Names}}" | grep -q
     exit 1
 fi
 
-# 关键改动：在容器内部检查目录是否存在
-# 我们通过 docker exec 远程执行一个测试命令
-if ! docker exec "${CONTAINER_NAME}" test -d "${TBL_DIR_IN_CONTAINER}"; then
-    echo "错误: 目录 '${TBL_DIR_IN_CONTAINER}' 在容器 '${CONTAINER_NAME}' 内部不存在。"
-    exit 1
+# 检查容器内目录是否存在，不存在则创建
+docker exec "${CONTAINER_NAME}" mkdir -p "${TBL_DIR_IN_CONTAINER}"
+# 复制本地目录下的所有.tbl文件到容器目标目录（注意末尾的/*）
+if ! docker exec "${CONTAINER_NAME}" test -f "${TBL_DIR_IN_CONTAINER}/*.tbl"; then
+    docker cp "${TBL_DIR_IN_LOCAL}"/*.tbl "${CONTAINER_NAME}:${TBL_DIR_IN_CONTAINER}/"
 fi
 
 echo "开始批量导入过程..."
