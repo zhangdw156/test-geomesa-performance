@@ -21,8 +21,9 @@ TABLE_NAME="performance"
 DB_PASSWD="ds123456"
 
 # 3. 存放 .tbl 文件的目录
-TBL_DIR="/home/gstria/datasets/beijingshi_tbl"
+docker cp /home/gstria/datasets/beijingshi_tbl stag-gstria-postgis_postgis_1:/tmp/import-data
 
+TBL_DIR="/tmp/import-data/"
 
 # 记录脚本总开始时间 (纳秒级时间戳，精确到小数点后9位)
 start_total_time=$(date +%s.%N)
@@ -76,15 +77,13 @@ for tbl_file in "${files[@]}"; do
     echo "--------------------------------------------------"
     echo "准备导入文件: $filename"
 
-    # 构建 \copy 命令
-    COMMAND="copy ${TABLE_NAME}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');"
+    # 构建服务器端的 COPY 命令
+    COMMAND="COPY ${TABLE_NAME}(fid,geom,dtg,taxi_id) FROM '${filename}' WITH (FORMAT text, DELIMITER '|', NULL '')"
 
     # 记录单个文件开始时间（纳秒级）
     start_file_time=$(date +%s.%N)
 
-    # 执行导入
-    cat "${tbl_file}" | docker exec \
-      -i \
+    docker exec \
       -e PGPASSWORD="${DB_PASSWD}" \
       "${CONTAINER_NAME}" \
       psql -U "${DB_USER}" -d "${DB_NAME}" -v ON_ERROR_STOP=1 -c "${COMMAND}"
