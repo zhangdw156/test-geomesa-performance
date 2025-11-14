@@ -16,7 +16,7 @@ CONTAINER_NAME="stag-gstria-postgis_postgis_1"
 
 # 2. 数据库连接详细信息
 DB_USER="postgres"
-DB_NAME="postgres"
+DB_NAME="gstria"
 TABLE_NAME="performance"
 DB_PASSWD="ds123456"
 
@@ -77,9 +77,8 @@ for tbl_file in "${files[@]}"; do
     echo "准备导入文件: $filename"
 
     # 构建 \copy 命令
-    COMMAND="copy ${TABLE_NAME}(geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');"
+    COMMAND="copy ${TABLE_NAME}(geom,dtg,taxi_id) FROM '$filename' WITH (FORMAT text, DELIMITER '|', NULL '');"
 
-    # 新增：记录单个文件导入的开始时间
     start_file_time=$(date +%s)
 
     # 执行导入

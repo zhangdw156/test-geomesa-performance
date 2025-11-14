@@ -17,7 +17,7 @@ import java.util.Arrays;
 public class CreateSFTTest {
     public static DataStoreConfig dataStoreConfig = DataStoreConfig.PPG;
     public static String spec = "*geom:Point:srid=4326,dtg:Date,taxi_id:Integer";
-    public static String typeName = "test01";
+    public static String typeName = "performance";
 
     @Test
     @Order(1)
