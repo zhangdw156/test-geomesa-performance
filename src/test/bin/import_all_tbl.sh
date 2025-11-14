@@ -77,7 +77,7 @@ for tbl_file in "${files[@]}"; do
     echo "准备导入文件: $filename"
 
     # 构建 \copy 命令
-    COMMAND="copy ${TABLE_NAME}(fix,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');"
+    COMMAND="copy ${TABLE_NAME}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');"
 
     start_file_time=$(date +%s)
 
