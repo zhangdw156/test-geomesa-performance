@@ -28,7 +28,7 @@ TARGET_TABLE="performance_wa"  # 写入缓冲区 - GeoMesa架构入口点
 DB_PASSWD="ds123456"
 
 # 3. 容器内部存放 .tbl 文件的目录
-TBL_DIR_IN_CONTAINER="/tmp/import-data"
+TBL_DIR_IN_CONTAINER="/tmp/import_data"
 TBL_DIR_IN_LOCAL="/home/gstria/datasets/beijingshi_tbl_100k"
 
 # 4. 批处理和性能参数
