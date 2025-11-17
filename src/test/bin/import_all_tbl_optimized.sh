@@ -33,7 +33,7 @@ TBL_DIR_IN_LOCAL="/home/gstria/datasets/beijingshi_tbl_100k"
 
 # 4. 批处理和性能参数
 BATCH_SIZE=50                   # 每50个文件提交一次事务 (性能最佳点)
-MAX_BATCH_ROWS=500000           # 每批最大50万条记录
+MAX_BATCH_ROWS=5000000           # 每批最大500万条记录
 MAX_BATCH_DURATION=30           # 单批次最大持续时间(秒)
 ADAPTIVE_BATCHING=true          # 启用自适应批大小调整
 
