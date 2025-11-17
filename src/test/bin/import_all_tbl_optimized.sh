@@ -367,7 +367,7 @@ for i in "${!files[@]}"; do
         batch_end_time=$(date +%s.%N)
         batch_duration=$(echo "scale=3; $batch_end_time - $batch_start_time" | bc)
         avg_per_file=$(echo "scale=3; $batch_duration / $batch_counter" | bc)
-        batch_rows=$((batch_counter * 10000))
+        batch_rows=$((batch_counter * 100000))
         throughput=$(echo "scale=0; $batch_rows / $batch_duration" | bc)
 
         # 更新最佳/最差吞吐量
