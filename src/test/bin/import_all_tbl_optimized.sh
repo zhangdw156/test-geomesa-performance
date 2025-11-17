@@ -29,7 +29,7 @@ DB_PASSWD="ds123456"
 
 # 3. 容器内部存放 .tbl 文件的目录
 TBL_DIR_IN_CONTAINER="/tmp/import-data"
-TBL_DIR_IN_LOCAL="/home/gstria/datasets/beijingshi_tbl"
+TBL_DIR_IN_LOCAL="/home/gstria/datasets/beijingshi_tbl_100k"
 
 # 4. 批处理和性能参数
 BATCH_SIZE=50                   # 每50个文件提交一次事务 (性能最佳点)
