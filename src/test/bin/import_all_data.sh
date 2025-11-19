@@ -71,27 +71,37 @@ for i in "${!files[@]}"; do
 
     echo -ne "  -> 正在导入文件 ${current_file_num}/${total_files}: ${filename} ... "
 
-    # [MODIFIED] 恢复为 cat 管道模式，并进行精确计时
-    import_start_time=$(date +%s.%N)
+    # [MODIFIED] 重新加入 -q 标志，并将 stderr 重定向到一个临时文件以捕获错误
+    psql_error_log=$(mktemp)
 
-    # -q 选项让 psql 在成功时不输出 COPY ... 行数，保持界面干净
     cat "${local_full_path}" | docker exec -i "${CONTAINER_NAME}" \
-      psql -U "${DB_USER}" -d "${DB_NAME}" \
-      -c "COPY ${TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');"
+      psql -U "${DB_USER}" -d "${DB_NAME}" -q -v ON_ERROR_STOP=1 \
+      -c "COPY ${TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');" 2> "${psql_error_log}"
     exit_code=$?
 
     import_end_time=$(date +%s.%N)
-    echo "${import_start_time} --- ${import_end_time}"
+
     if [ "$exit_code" -eq 0 ]; then
         import_duration=$(echo "scale=3; $import_end_time - $import_start_time" | bc)
         total_import_duration=$(echo "scale=3; $total_import_duration + $import_duration" | bc)
         ((success_count++))
         echo "完成 (耗时: ${import_duration}s)"
     else
-        echo "失败！ (退出码: $exit_code)"
+        # [MODIFIED] 改进错误输出
+        echo -e "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo "!!!!!!!!!!!!!!!   导入失败！  !!!!!!!!!!!!!!!"
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo "文件: ${filename}"
+        echo "退出码: $exit_code"
+        echo "psql 错误信息:"
+        cat "${psql_error_log}"
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         ((fail_count++))
         # 因为 set -e，脚本在这里就会停止
     fi
+
+    # 清理临时日志文件
+    rm -f "${psql_error_log}"
 done
 
 end_total_time=$(date +%s.%N)
