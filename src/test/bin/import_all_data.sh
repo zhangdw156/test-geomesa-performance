@@ -85,7 +85,7 @@ for i in "${!files[@]}"; do
     file_start_time=$(date +%s.%N)
 
     # 执行导入命令
-    cat "${full_path}" | docker exec -i "${CONTAINER_NAME}" \
+    cat "${full_path}" | docker exec -it "${CONTAINER_NAME}" \
       psql -U "${DB_USER}" -d "${DB_NAME}" -q -v ON_ERROR_STOP=1 \
       -c "COPY ${TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');" > /dev/null 2>&1
 
