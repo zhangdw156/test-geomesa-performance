@@ -83,7 +83,7 @@ for i in "${!files[@]}"; do
 
     import_end_time=$(date +%s.%N)
 
-    echo "${import_end_time} --- ${$import_start_time}"
+    echo "${import_end_time} --- ${import_start_time}"
 
     if [ "$exit_code" -eq 0 ]; then
         import_duration=$(echo "scale=3; $import_end_time - $import_start_time" | bc)
