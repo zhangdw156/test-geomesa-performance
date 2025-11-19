@@ -81,7 +81,7 @@ def main():
         cmd = (
             f"cat {file_path} | docker exec -i {CONTAINER_NAME} "
             f"psql -U {DB_USER} -d {DB_NAME} -q -v ON_ERROR_STOP=1 "
-            f"-c 'COPY {TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER \"|\", NULL \"\");'"
+            f'-c "COPY {TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER \'|\', NULL \'\');"'
         )
         result = run_command(cmd, check=False, capture_output=True)
 
