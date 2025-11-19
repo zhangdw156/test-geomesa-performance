@@ -74,7 +74,7 @@ for i in "${!files[@]}"; do
     # [MODIFIED] 重新加入 -q 标志，并将 stderr 重定向到一个临时文件以捕获错误
     psql_error_log=$(mktemp)
 
-    $import_start_time=$(date +%s.%N)
+    import_start_time=$(date +%s.%N)
 
     cat "${local_full_path}" | docker exec -i "${CONTAINER_NAME}" \
       psql -U "${DB_USER}" -d "${DB_NAME}" -q -v ON_ERROR_STOP=1 \
