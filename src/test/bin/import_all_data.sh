@@ -57,12 +57,12 @@ fi
 echo "共找到 ${total_files} 个文件需要导入。"
 
 
-# 4. 循环导入并计时
+# 4. 循环导入并计时 [MODIFIED]
 echo -e "\n>>> 阶段 4: 开始循环导入文件..."
 success_count=0
 fail_count=0
-total_import_duration=0 # [MODIFIED] 变量名统一为 total_import_duration
-start_total_time=$(date +%s.%N)
+total_import_duration="0.0" # 初始化为浮点数
+start_total_time=$(date +%s) # 使用整数秒足够了
 
 for i in "${!files[@]}"; do
     local_full_path="${files[$i]}"
@@ -71,45 +71,46 @@ for i in "${!files[@]}"; do
 
     echo -ne "  -> 正在导入文件 ${current_file_num}/${total_files}: ${filename} ... "
 
-    # [MODIFIED] 重新加入 -q 标志，并将 stderr 重定向到一个临时文件以捕获错误
     psql_error_log=$(mktemp)
+    time_log=$(mktemp)
 
-    import_start_time=$(date +%s.%N)
-
-    cat "${local_full_path}" | docker exec -i "${CONTAINER_NAME}" \
+    # [MODIFIED] 使用 time 命令计时
+    # { time ... ; } 2> time_log:
+    #   - `{ ...; }` 将内部命令作为一个组
+    #   - `time` 测量这个组的执行时间
+    #   - `2> time_log` 将 time 的输出 (stderr) 重定向到临时文件
+    { time (cat "${local_full_path}" | docker exec -i "${CONTAINER_NAME}" \
       psql -U "${DB_USER}" -d "${DB_NAME}" -q -v ON_ERROR_STOP=1 \
-      -c "COPY ${TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');" 2> "${psql_error_log}"
+      -c "COPY ${TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');") >/dev/null 2>"${psql_error_log}"; } 2> "${time_log}"
     exit_code=$?
 
-    import_end_time=$(date +%s.%N)
-
-    echo "${import_end_time} --- ${import_start_time}"
-
     if [ "$exit_code" -eq 0 ]; then
-        import_duration=$(echo "scale=3; $import_end_time - $import_start_time" | bc)
+        # 从 time_log 文件中提取 real 时间的分钟(m)和秒(s)
+        real_time_str=$(grep 'real' "${time_log}")
+        minutes=$(echo "${real_time_str}" | awk -F'[m ]' '{print $2}')
+        seconds=$(echo "${real_time_str}" | awk -F'[ms]' '{print $3}')
+
+        # 将分钟转换为秒并与秒数相加
+        import_duration=$(echo "scale=3; ${minutes} * 60 + ${seconds}" | bc)
+
         total_import_duration=$(echo "scale=3; $total_import_duration + $import_duration" | bc)
         ((success_count++))
         echo "完成 (耗时: ${import_duration}s)"
     else
-        # [MODIFIED] 改进错误输出
-        echo -e "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        echo "!!!!!!!!!!!!!!!   导入失败！  !!!!!!!!!!!!!!!"
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo -e "\n\n!!!!!!!!!!!!!!!!!!! 导入失败 !!!!!!!!!!!!!!!!!!!"
         echo "文件: ${filename}"
         echo "退出码: $exit_code"
         echo "psql 错误信息:"
         cat "${psql_error_log}"
         echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         ((fail_count++))
-        # 因为 set -e，脚本在这里就会停止
     fi
 
-    # 清理临时日志文件
-    rm -f "${psql_error_log}"
+    rm -f "${psql_error_log}" "${time_log}"
 done
 
-end_total_time=$(date +%s.%N)
-total_script_duration=$(echo "scale=3; $end_total_time - $start_total_time" | bc)
+end_total_time=$(date +%s)
+total_script_duration=$((end_total_time - start_total_time))
 echo "所有文件导入尝试完毕。"
 
 
