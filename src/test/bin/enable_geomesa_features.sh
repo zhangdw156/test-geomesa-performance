@@ -35,16 +35,12 @@ run_psql() {
 echo "$(date '+%Y-%m-%d %H:%M:%S') - 开始恢复 GeoMesa 分区架构特性..."
 
 # 1. 重新创建 performance_wa 表上的索引
-echo -e "\n=== 步骤 1: 重新创建表 performance_wa 上的索引 ==="
-CREATE_INDEXES_SQL=$(cat <<'EOF'
--- 主键通常在建表时已定义，这里假设它存在
-CREATE INDEX IF NOT EXISTS performance_wa_dtg_idx ON public.performance_wa (dtg);
-CREATE INDEX IF NOT EXISTS performance_wa_geom_idx ON public.performance_wa USING GIST (geom);
-CREATE INDEX IF NOT EXISTS performance_wa_taxi_id_idx ON public.performance_wa (taxi_id);
-SELECT '已成功在 "performance_wa" 表上重新创建二级索引。';
-EOF
-)
-run_psql "${CREATE_INDEXES_SQL}"
+echo -e "\n=== 步骤 1: (已优化) 确认 performance_wa 表上无需创建索引 ==="
+# 根据 GeoMesa 初始化日志，索引是在子表 (如 performance_wa_001) 上创建的，
+# 而不是在母表 performance_wa 上。因此，在恢复阶段无需在此表上创建索引。
+# 如果需要重建子表的索引，则需要更复杂的逻辑来遍历所有子表。
+# 当前假设子表索引在导入期间未被删除。
+echo "根据设计，母表 'performance_wa' 上无需二级索引，跳过此步骤。"
 
 # 2. 重新创建视图上的触发器
 echo -e "\n=== 步骤 2: 重新创建视图 performance 上的触发器 ==="
