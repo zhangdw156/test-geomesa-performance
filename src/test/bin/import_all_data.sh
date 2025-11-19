@@ -76,7 +76,7 @@ for i in "${!files[@]}"; do
 
     # -q 选项让 psql 在成功时不输出 COPY ... 行数，保持界面干净
     cat "${local_full_path}" | docker exec -i "${CONTAINER_NAME}" \
-      psql -U "${DB_USER}" -d "${DB_NAME}" -q -v ON_ERROR_STOP=1 \
+      psql -U "${DB_USER}" -d "${DB_NAME}" \
       -c "COPY ${TARGET_TABLE}(fid,geom,dtg,taxi_id) FROM STDIN WITH (FORMAT text, DELIMITER '|', NULL '');"
     exit_code=$?
 
