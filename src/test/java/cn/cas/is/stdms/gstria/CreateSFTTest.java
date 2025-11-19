@@ -1,14 +1,15 @@
 package cn.cas.is.stdms.gstria;
 
 import lombok.extern.slf4j.Slf4j;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
-import org.geotools.data.DataUtilities;
+import org.geotools.data.*;
+import org.geotools.filter.text.ecql.ECQL;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Filter;
 
 import java.util.Arrays;
 
@@ -45,6 +46,16 @@ public class CreateSFTTest {
         try {
             ds = DataStoreFinder.getDataStore(dataStoreConfig.toMap());
             log.info("sfts: {}",Arrays.toString(ds.getTypeNames()));
+
+            Filter filter = ECQL.toFilter("BBOX(geom,116,39,117,40) AND dtg DURING 2000-01-01T00:00:00Z/2000-01-01T00:01:00Z");
+            Query query = new Query(typeName, filter);
+            FeatureReader<SimpleFeatureType, SimpleFeature> reader = ds.getFeatureReader(query, Transaction.AUTO_COMMIT);
+            log.info("reader: {}", reader);
+            while (reader.hasNext()) {
+                SimpleFeature feature = reader.next();
+                log.info("feature: {}", feature);
+            }
+            reader.close();
         } finally {
             if (ds != null) {
                 ds.dispose();
