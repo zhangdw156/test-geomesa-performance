@@ -157,7 +157,7 @@ def main():
     logging.info(f"\n>>> 阶段 1: 清空数据 '{TARGET_TABLE_BASE}'...")
     try:
         run_command(
-            f"docker exec -i {CONTAINER_NAME} psql -U {DB_USER} -d {DB_NAME} -c 'TRUNCATE {TARGET_TABLE_BASE};'"
+            f"docker exec -i {CONTAINER_NAME} psql -U {DB_USER} -d {DB_NAME} -c 'DELETE FROM {TARGET_TABLE_BASE};'"
         )
         logging.info("所有分区表已清空。")
     except subprocess.CalledProcessError:
