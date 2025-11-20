@@ -54,8 +54,7 @@ echo ">>> 步骤 1.5: [优化] 正在删除 ${PARTITION_NAME} 上除主键外的
 # 1. 去除 PARTITION_NAME 中的双引号
 PARTITION_NAME_PURE=$(echo "${PARTITION_NAME}" | tr -d '"')
 
-# 2. 【关键修改】使用系统表 pg_index 的 indisprimary 字段来精准排除主键
-# 逻辑：连接 pg_index, pg_class, pg_namespace，查找目标表下 indisprimary = false 的索引名
+# 2. 使用系统表 pg_index 的 indisprimary 字段来精准排除主键
 GET_INDEXES_SQL="
 SELECT i.relname
 FROM pg_index ix
@@ -89,6 +88,30 @@ else
 fi
 
 # ==============================================================================
+# 步骤 1.6: (新增) 重置主键索引 (先删后建)
+# ==============================================================================
+echo ">>> 步骤 1.6: [重置] 正在重置主键索引 (Drop -> Create)..."
+
+# 假设主键约束名遵循标准命名: 表名_pkey
+PKEY_CONSTRAINT_NAME="${PARTITION_NAME_PURE}_pkey"
+
+# 1. 删除主键约束
+echo " -> Dropping Primary Key constraint: ${PKEY_CONSTRAINT_NAME} ..."
+# 使用 IF EXISTS 防止不存在时报错
+docker exec "${CONTAINER_NAME}" \
+  psql -U "${DB_USER}" -d "${DB_NAME}" \
+  -c "ALTER TABLE \"public\".\"${PARTITION_NAME_PURE}\" DROP CONSTRAINT IF EXISTS \"${PKEY_CONSTRAINT_NAME}\";"
+
+# 2. 立即重新创建主键约束
+# 根据之前的 \d+ 输出，主键包含 (fid, dtg)
+echo " -> Recreating Primary Key constraint: ${PKEY_CONSTRAINT_NAME} ..."
+time docker exec "${CONTAINER_NAME}" \
+  psql -U "${DB_USER}" -d "${DB_NAME}" \
+  -c "ALTER TABLE \"public\".\"${PARTITION_NAME_PURE}\" ADD CONSTRAINT \"${PKEY_CONSTRAINT_NAME}\" PRIMARY KEY (fid, dtg);"
+
+echo "主键重置完毕。"
+
+# ==============================================================================
 # 步骤 2: 构建并执行包含完整事务的最终加载命令
 # ==============================================================================
 echo ">>> 步骤 2: 开始执行数据导入事务..."
@@ -104,10 +127,7 @@ time ( \
         # 1. 输出文件内容
         cat "${FILE_PATH}"; \
 
-        # 2. 【关键修改】智能补全换行符
-        # tail -c 1 读取最后一个字节。
-        # 如果最后是换行符，Shell的命令替换 $(...) 会自动把结尾的换行符去掉，导致结果为空，条件为假 -> 不 echo。
-        # 如果最后不是换行符（是数据），结果不为空，条件为真 -> echo 一个换行符。
+        # 2. 智能补全换行符
         if [ -n "$(tail -c 1 "${FILE_PATH}")" ]; then
             echo ""
         fi
@@ -135,12 +155,9 @@ echo "   ${TARGET_TABLE_BASE} 当前记录数: ${FINAL_COUNT}"
 echo "=============================================="
 
 # ==============================================================================
-# 步骤 3.5 (新增): 恢复分区表上的辅助索引
+# 步骤 3.5: 恢复分区表上的辅助索引
 # ==============================================================================
 echo ">>> 步骤 3.5: [恢复] 正在重建 ${PARTITION_NAME} 上的辅助索引..."
-
-# PARTITION_NAME_PURE 已经在步骤 1.5 获取 (例如 performance_wa_000)
-# PARTITION_NAME 是带引号的表名 (例如 "performance_wa_000")
 
 # 1. 重建 dtg 索引 (btree)
 echo " -> Creating index: ${PARTITION_NAME_PURE}_dtg ..."
