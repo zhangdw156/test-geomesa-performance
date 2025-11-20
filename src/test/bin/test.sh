@@ -47,16 +47,25 @@ fi
 echo "成功获取分区表名: ${PARTITION_NAME}"
 
 # ==============================================================================
-# 步骤 1.5 (新增): 删除分区表上除主键外的所有索引
+# 步骤 1.5: (修正版) 删除分区表上除主键外的所有索引
 # ==============================================================================
 echo ">>> 步骤 1.5: [优化] 正在删除 ${PARTITION_NAME} 上除主键外的索引以加速导入..."
 
-# 1. 去除 PARTITION_NAME 中的双引号，用于查询系统表 (例如 "performance_wa_000" -> performance_wa_000)
+# 1. 去除 PARTITION_NAME 中的双引号
 PARTITION_NAME_PURE=$(echo "${PARTITION_NAME}" | tr -d '"')
 
-# 2. 查询该表下的非主键索引名称
-# 逻辑：查询 pg_indexes，过滤掉 indexdef 包含 "PRIMARY KEY" 的记录
-GET_INDEXES_SQL="SELECT indexname FROM pg_indexes WHERE schemaname = 'public' AND tablename = '${PARTITION_NAME_PURE}' AND indexdef NOT LIKE '%PRIMARY KEY%';"
+# 2. 【关键修改】使用系统表 pg_index 的 indisprimary 字段来精准排除主键
+# 逻辑：连接 pg_index, pg_class, pg_namespace，查找目标表下 indisprimary = false 的索引名
+GET_INDEXES_SQL="
+SELECT i.relname
+FROM pg_index ix
+JOIN pg_class t ON t.oid = ix.indrelid
+JOIN pg_class i ON i.oid = ix.indexrelid
+JOIN pg_namespace n ON n.oid = t.relnamespace
+WHERE t.relname = '${PARTITION_NAME_PURE}'
+  AND n.nspname = 'public'
+  AND ix.indisprimary = 'f';
+"
 
 INDEXES_TO_DROP=$(docker exec "${CONTAINER_NAME}" \
   psql -U "${DB_USER}" -d "${DB_NAME}" -tA -c "${GET_INDEXES_SQL}")
@@ -66,7 +75,6 @@ if [[ -n "$INDEXES_TO_DROP" ]]; then
     echo "发现以下辅助索引，准备删除:"
     echo "${INDEXES_TO_DROP}"
 
-    # 设置 IFS 为换行符，防止索引名中有空格导致解析错误（虽然这里通常没有）
     IFS=$'\n'
     for IDX in $INDEXES_TO_DROP; do
         echo " -> Dropping index: ${IDX} ..."
