@@ -21,7 +21,7 @@ public class CreateSFTTest {
     public static String typeName = "performance";
 
     @Test
-    @Order(1)
+    @Order(2)
     public void testCreateSFT() throws Exception {
         DataStore ds = null;
         try {
@@ -40,7 +40,7 @@ public class CreateSFTTest {
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void testShowSFT() throws Exception {
         DataStore ds = null;
         try {
@@ -66,7 +66,7 @@ public class CreateSFTTest {
     }
 
     @Test
-    @Order(3)
+    @Order(1)
     public void testRemoveSFT() throws Exception {
         DataStore ds = null;
         try {
