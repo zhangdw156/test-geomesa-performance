@@ -135,6 +135,34 @@ echo "   ${TARGET_TABLE_BASE} 当前记录数: ${FINAL_COUNT}"
 echo "=============================================="
 
 # ==============================================================================
+# 步骤 3.5 (新增): 恢复分区表上的辅助索引
+# ==============================================================================
+echo ">>> 步骤 3.5: [恢复] 正在重建 ${PARTITION_NAME} 上的辅助索引..."
+
+# PARTITION_NAME_PURE 已经在步骤 1.5 获取 (例如 performance_wa_000)
+# PARTITION_NAME 是带引号的表名 (例如 "performance_wa_000")
+
+# 1. 重建 dtg 索引 (btree)
+echo " -> Creating index: ${PARTITION_NAME_PURE}_dtg ..."
+time docker exec "${CONTAINER_NAME}" \
+  psql -U "${DB_USER}" -d "${DB_NAME}" \
+  -c "CREATE INDEX IF NOT EXISTS \"${PARTITION_NAME_PURE}_dtg\" ON public.${PARTITION_NAME} USING btree (dtg);"
+
+# 2. 重建 spatial_geom 索引 (gist)
+echo " -> Creating index: ${PARTITION_NAME_PURE}_spatial_geom ..."
+time docker exec "${CONTAINER_NAME}" \
+  psql -U "${DB_USER}" -d "${DB_NAME}" \
+  -c "CREATE INDEX IF NOT EXISTS \"${PARTITION_NAME_PURE}_spatial_geom\" ON public.${PARTITION_NAME} USING gist (geom);"
+
+# 3. 重建 taxi_id 索引 (btree)
+echo " -> Creating index: ${PARTITION_NAME_PURE}_taxi_id ..."
+time docker exec "${CONTAINER_NAME}" \
+  psql -U "${DB_USER}" -d "${DB_NAME}" \
+  -c "CREATE INDEX IF NOT EXISTS \"${PARTITION_NAME_PURE}_taxi_id\" ON public.${PARTITION_NAME} USING btree (taxi_id);"
+
+echo "辅助索引重建完毕。"
+
+# ==============================================================================
 # 步骤 4: (后清理) 再次清除 performance 里的数据
 # ==============================================================================
 echo ">>> 步骤 4: [后清理] 正在清除 ${TARGET_TABLE_BASE} 中的数据以释放空间/重置环境..."
