@@ -96,7 +96,7 @@ public class IngestDataSshTest {
 
             Instant end = Instant.now();
             Duration duration = Duration.between(start, end);
-            log.info("Done! Total: {} files, Time: {}s, Speed: {:.2f} files/s",
+            log.info("Done! Total: {} files, Time: {}s, Speed: {} files/s",
                     totalFiles, duration.getSeconds(), totalFiles / (double) duration.getSeconds());
 
         } finally {
