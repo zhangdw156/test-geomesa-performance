@@ -1,0 +1,260 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -73.6046,
+                    41.3254
+                ]
+            },
+            "properties": {
+                "name": "Charles Xavier",
+                "alias": "Professor X",
+                "age": 65,
+                "dtg": "2023-05-20",
+                "location": "X-Mansion, Westchester"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -111.4560,
+                    56.7264
+                ]
+            },
+            "properties": {
+                "name": "Logan",
+                "alias": "Wolverine",
+                "age": 137,
+                "dtg": "2023-05-22",
+                "location": "Alkali Lake, Alberta"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -74.0060,
+                    40.7128
+                ]
+            },
+            "properties": {
+                "name": "Wade Wilson",
+                "alias": "Deadpool",
+                "age": 35,
+                "dtg": "2023-05-28",
+                "location": "New York City, NY"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -90.0715,
+                    29.9511
+                ]
+            },
+            "properties": {
+                "name": "Remy LeBeau",
+                "alias": "Gambit",
+                "age": 30,
+                "dtg": "2023-05-15",
+                "location": "New Orleans, Louisiana"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -77.0369,
+                    38.9072
+                ]
+            },
+            "properties": {
+                "name": "Scott Summers",
+                "alias": "Cyclops",
+                "age": 33,
+                "dtg": "2023-05-10",
+                "location": "Washington, D.C."
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -87.6298,
+                    41.8781
+                ]
+            },
+            "properties": {
+                "name": "Kitty Pryde",
+                "alias": "Shadowcat",
+                "age": 24,
+                "dtg": "2023-05-05",
+                "location": "Chicago, Illinois"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    49.2312,
+                    -12.3456
+                ]
+            },
+            "properties": {
+                "name": "Erik Lehnsherr",
+                "alias": "Magneto",
+                "age": 65,
+                "dtg": "2023-06-15",
+                "location": "Genosha"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    31.2357,
+                    30.0444
+                ]
+            },
+            "properties": {
+                "name": "Ororo Munroe",
+                "alias": "Storm",
+                "age": 32,
+                "dtg": "2023-08-10",
+                "location": "Cairo, Egypt"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -73.6046,
+                    41.3254
+                ]
+            },
+            "properties": {
+                "name": "Jean Grey",
+                "alias": "Phoenix",
+                "age": 28,
+                "dtg": "2023-09-01",
+                "location": "X-Mansion, Westchester"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    2.3522,
+                    48.8566
+                ]
+            },
+            "properties": {
+                "name": "Raven Darkhölme",
+                "alias": "Mystique",
+                "age": 100,
+                "dtg": "2023-04-12",
+                "location": "Paris, France"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    139.6917,
+                    35.6895
+                ]
+            },
+            "properties": {
+                "name": "Betsy Braddock",
+                "alias": "Psylocke",
+                "age": 30,
+                "dtg": "2023-02-14",
+                "location": "Tokyo, Japan"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    107.5000,
+                    53.5000
+                ]
+            },
+            "properties": {
+                "name": "Piotr Rasputin",
+                "alias": "Colossus",
+                "age": 26,
+                "dtg": "2023-11-20",
+                "location": "Lake Baikal, Russia"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.5820,
+                    48.1351
+                ]
+            },
+            "properties": {
+                "name": "Kurt Wagner",
+                "alias": "Nightcrawler",
+                "age": 25,
+                "dtg": "2023-07-04",
+                "location": "Munich, Germany"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -0.1278,
+                    51.5074
+                ]
+            },
+            "properties": {
+                "name": "Pietro Maximoff",
+                "alias": "Quicksilver",
+                "age": 26,
+                "dtg": "2023-05-18",
+                "location": "London, UK"
+            }
+        },
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -166.406,
+                    -78.46
+                ]
+            },
+            "properties": {
+                "name": "Bobby Drake",
+                "alias": "Iceman",
+                "age": 22,
+                "dtg": "2023-12-25",
+                "location": "McMurdo Station, Antarctica"
+            }
+        }
+    ]
+}

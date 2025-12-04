@@ -1,0 +1,46 @@
+{
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                -100.2365,
+                23.0
+            ]
+        },
+        "properties": {
+            "name": "Harry",
+            "age": 20,
+            "dtg": "2015-05-06"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                40.232,
+                -53.2356
+            ]
+        },
+        "properties": {
+            "name": "Hermione",
+            "age": 25,
+            "dtg": "2015-06-07"
+        }
+    }, {
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [
+                3.0,
+                -62.23
+            ]
+        },
+        "properties": {
+            "name": "Severus",
+            "age": 30,
+            "dtg": "2015-10-23"
+        }
+    }]
+}

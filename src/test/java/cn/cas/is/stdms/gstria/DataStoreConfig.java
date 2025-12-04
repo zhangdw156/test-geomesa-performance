@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public enum DataStoreConfig {
 
     PPG("geomesa.ppg"),
+    PG("geomesa.pg"),
     HBASE("geomesa.hbase");
 
     private static class ConfigHolder {
